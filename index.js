@@ -9,7 +9,7 @@ const app = express();
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
-  cors: { origin: process.env.client_base_url },
+  cors: { origin: "*" },
 });
 
 const rooms = [];
