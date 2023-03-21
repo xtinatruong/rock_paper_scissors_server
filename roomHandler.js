@@ -1,6 +1,6 @@
 const shortId = require("shortid");
 
-const roomHandler = (io, socket, rooms) => {
+const roomHandler = (io, socket, rooms, replicaSocket) => {
   const create = (payload, callback) => {
     if (payload.type === "stranger") {
       const index = rooms.findIndex(
@@ -34,6 +34,7 @@ const roomHandler = (io, socket, rooms) => {
         rooms.push(room);
         socket.join(room.roomId);
         io.to(room.roomId).emit("room:get", room);
+        io.emit("room:copy.create", room);
         callback(null, room.roomId);
       }
     } else {
@@ -53,6 +54,7 @@ const roomHandler = (io, socket, rooms) => {
       rooms.push(room);
       socket.join(room.roomId);
       io.to(room.roomId).emit("room:get", room);
+      io.emit("room:copy.create", room);
       callback(null, room.roomId);
     }
   };
@@ -73,6 +75,7 @@ const roomHandler = (io, socket, rooms) => {
         rooms.push(room);
         socket.join(room.roomId);
         io.to(room.roomId).emit("room:get", room);
+        io.emit("room:copy.update", room);
         callback(null, room);
       } else {
         callback({ error: true });
@@ -87,6 +90,7 @@ const roomHandler = (io, socket, rooms) => {
     if (index >= 0) {
       rooms[index] = payload;
       io.to(payload.roomId).emit("room:get", payload);
+      io.emit("room:copy.update", payload);
     }
   };
 

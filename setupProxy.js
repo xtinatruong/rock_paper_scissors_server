@@ -2,6 +2,17 @@ const net = require('net');
 
 const server = net.createServer();
 
+const servers = {
+  srv1: 8080,
+  srv2: 5000
+}
+
+master_server = servers.srv1;
+
+function changeServer(proxyToServerSocket) {
+
+}
+
 server.on('connection', (clientToProxySocket) => {
   console.log('A Client Connected To Proxy');
   clientToProxySocket.once('data', (data) => {
@@ -21,9 +32,11 @@ server.on('connection', (clientToProxySocket) => {
 
     console.log(serverAddress);
 
+
+
     let proxyToServerSocket = net.createConnection({
-      host: serverAddress,
-      port: serverPort
+      host: "localhost",
+      port: 8080
     }, () => {
       console.log('PROXY TO SERVER SET UP');
       if (tls) {
@@ -35,12 +48,24 @@ server.on('connection', (clientToProxySocket) => {
       clientToProxySocket.pipe(proxyToServerSocket);
       proxyToServerSocket.pipe(clientToProxySocket);
 
+      
+
       proxyToServerSocket.on('error', (err) => {
         console.log('PROXY TO SERVER ERROR');
         console.log(err);
       });
+
+      
       
     });
+
+    // --------- For Fault Tolerance ------------- //
+    // proxyToServerSocket.setTimeout(3000);
+    // proxyToServerSocket.on('timeout', () => {
+    //   console.log("timeout error from: Server " + master_server.toString());
+    //   changeServer(proxyToServerSocket);
+    // });
+
     clientToProxySocket.on('error', err => {
       console.log('CLIENT TO PROXY ERROR');
       console.log(err);

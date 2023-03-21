@@ -3,20 +3,32 @@ const express = require("express");
 const { createServer } = require("http");
 const { Server } = require("socket.io");
 const roomHandler = require("./roomHandler");
+const { io } = require("socket.io-client");
 
 dotenv.config();
 const app = express();
 
 const httpServer = createServer(app);
-const io = new Server(httpServer, {
+const mainServer = new Server(httpServer, {
   cors: { origin: "*" },
 });
 
 const rooms = [];
+let master = true;
+let replicaSocket = null;
 
-io.on("connection", (socket) => {
+connectRepl = () => {
+  replicaSocket = io("localhost:5000");
+
+}
+
+mainServer.on("connection", (socket) => {
   console.log("connected", socket.id);
-  roomHandler(io, socket, rooms);
+  if(master) {
+    connectRepl();
+    roomHandler(mainServer, socket, rooms, replicaSocket);
+    
+  }
 
   socket.on("disconnect", () => {
     console.log("disconnected", socket.id);
