@@ -15,17 +15,19 @@ const mainServer = new Server(httpServer, {
 
 const rooms = [];
 let master = true;
-let replicaSocket = null;
+//let replicaSocket = null;
 
-connectRepl = () => {
-  replicaSocket = io("localhost:5000");
+// connectRepl = () => {
+//   replicaSocket = io("localhost:5000");
 
-}
+// }
+
+const replicaSocket = io.connect('http://localhost:5000', {reconnect: true});
 
 mainServer.on("connection", (socket) => {
   console.log("connected", socket.id);
   if(master) {
-    connectRepl();
+    //connectRepl();   
     roomHandler(mainServer, socket, rooms, replicaSocket);
     
   }

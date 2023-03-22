@@ -34,7 +34,7 @@ const roomHandler = (io, socket, rooms, replicaSocket) => {
         rooms.push(room);
         socket.join(room.roomId);
         io.to(room.roomId).emit("room:get", room);
-        io.emit("room:copy.create", room);
+        replicaSocket.emit("room:copy.create", room);
         callback(null, room.roomId);
       }
     } else {
@@ -54,7 +54,7 @@ const roomHandler = (io, socket, rooms, replicaSocket) => {
       rooms.push(room);
       socket.join(room.roomId);
       io.to(room.roomId).emit("room:get", room);
-      io.emit("room:copy.create", room);
+      replicaSocket.emit("room:copy.create", room);
       callback(null, room.roomId);
     }
   };
@@ -75,7 +75,7 @@ const roomHandler = (io, socket, rooms, replicaSocket) => {
         rooms.push(room);
         socket.join(room.roomId);
         io.to(room.roomId).emit("room:get", room);
-        io.emit("room:copy.update", room);
+        replicaSocket.emit("room:copy.update", room);
         callback(null, room);
       } else {
         callback({ error: true });
@@ -90,7 +90,7 @@ const roomHandler = (io, socket, rooms, replicaSocket) => {
     if (index >= 0) {
       rooms[index] = payload;
       io.to(payload.roomId).emit("room:get", payload);
-      io.emit("room:copy.update", payload);
+      replicaSocket.emit("room:copy.update", payload);
     }
   };
 
